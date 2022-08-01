@@ -7,7 +7,7 @@ import './Login.css'
 
 function Login() {
   return (
-    <Container>
+    <Container fluid>
       <Row>
         <Col md={5} className="login__bg">
 
@@ -16,6 +16,9 @@ function Login() {
 
         <Col md={7} className="d-flex align-items-center justify-content-center flex-direction-column">
          <Form style={{width:"80%" , maxWidth:500}}>
+            
+         <h1 className="text-center">Login</h1>
+
             <Form.Group className="mb-3" controlId="formBasicEmail">
               <Form.Label>Email address</Form.Label>
               <Form.Control type="email" placeholder="Enter email" />
