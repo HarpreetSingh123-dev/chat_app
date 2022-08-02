@@ -39,8 +39,29 @@ async function uploadImage(){
 
   const data = new FormData()
   data.append('file', image)
-  data.append('upload_preset' )
+  data.append('upload_preset' , 'gulpcyl5')
 
+  try{
+     setUploadingImage(true)
+    // const cloudinaryUrl = 'https://cloudinary://386278873461642:pqjjFRxR-NpuFIIONkbOJsYWFRw@dfd0e3qao/image/upload'
+     let res = await fetch( "https://api.cloudinary.com/v1_1/dfd0e3qao/image/upload" , {
+        
+         method:'post',
+         body:data
+
+     })
+
+     const urlData = await res.json();
+     setUploadingImage(false);
+     return urlData.url
+  }
+
+  catch(error){
+
+    setUploadingImage(false)
+    console.log(error)  
+
+  }
 }
 
 
@@ -49,8 +70,8 @@ async function uploadImage(){
     e.preventDefault()
     
     if(!image) return alert("Please upload your profile picture")
-    
     const url = await uploadImage(image)
+    console.log(url)
  
  
  }
@@ -93,7 +114,7 @@ async function uploadImage(){
             <Form.Control type="password" placeholder="Password" onChange={ (e) => setPassword(e.target.value) } value={password} />
           </Form.Group>
           <Button variant="primary" type="submit">
-            Create Account
+            { uploadingImage ? 'Signing you up ' : 'Sign Up'}
           </Button>
 
           <div className="py-4">
