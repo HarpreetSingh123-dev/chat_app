@@ -1,14 +1,34 @@
-import React , {useState} from "react";
+import React , {useContext, useState} from "react";
+import {useLoginUserMutation} from '../Sevices/appApi'
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import {Container , Row , Col } from 'react-bootstrap'
-import {Link} from 'react-router-dom'
+import {Link,useNavigate} from 'react-router-dom'
+import { AppContext } from "../Context/appContext";
 import './Login.css'
 
 function Login() {
  
   const [email , setEmail ] = useState('')
   const [password , setPassword ] = useState('')
+  const navigate = useNavigate()
+  const { socket } = useContext(AppContext)
+  const [loginUser , {isLoading, error}] = useLoginUserMutation()
+
+  function handleLogin(e){
+
+     e.preventDefault()
+
+     loginUser({email,password}).then(({data})=>{
+
+        if(data){
+           
+           socket.emit('new-user')
+           navigate("/chat")
+        }
+     })
+
+  }
 
 
   return (
@@ -20,7 +40,7 @@ function Login() {
         </Col>
 
         <Col md={7} className="d-flex align-items-center justify-content-center flex-direction-column">
-         <Form style={{width:"80%" , maxWidth:500}}>
+         <Form style={{width:"80%" , maxWidth:500}} onSubmit={handleLogin}>
             
          <h1 className="text-center">Login</h1>
 

@@ -33,7 +33,7 @@ const UserSchema = mongoose.Schema(
     },
     status: {
       type: String,
-      default: "Online",
+      default: "online"
     },
   },
   { minimize: false }
@@ -43,6 +43,7 @@ UserSchema.pre("save", function (next) {
   const user = this;
   if (!user.isModified("password")) return next;
 
+ 
   bcrypt.genSalt(10, function (err, salt) {
     if (err) return next(err);
 
@@ -51,7 +52,8 @@ UserSchema.pre("save", function (next) {
       user.password = hash;
       next();
     });
-  });
+  })
+
 });
 
 UserSchema.methods.toJSON = function () {
@@ -61,18 +63,18 @@ UserSchema.methods.toJSON = function () {
   return userObject;
 };
 
-UserSchema.statics.findByCredentials = async function (email, password) {
-  const user = User.findOne({ email });
-  if (!user) {
-    throw new Error("Inavlid email or password");
-  }
+UserSchema.statics.findByCredentials = async function(email, password) {
+ 
+  const user = await User.findOne({ email });
 
-  const isMatch = bcrypt.compare(password, user.password);
-  if (!isMatch) {
-    throw new Error("Inavlid email or password");
-  }
-
-  return user;
+  if (!user) throw new Error("Inavild username or password");
+   
+  const isMatch = await bcrypt.compare(password,user.password)
+ 
+  if(!isMatch) throw new Error("Invalid username or password")
+  
+  return user
+  
 };
 
 const User = mongoose.model("ChatAppUser", UserSchema);

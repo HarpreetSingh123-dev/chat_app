@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
+import {useSignUpUserMutation} from '../Sevices/appApi'
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import {Container , Row , Col } from 'react-bootstrap'
 import BotImage from '../Assets/Profile.jpg'
-import {Link} from 'react-router-dom'
+import {Link , useNavigate} from 'react-router-dom'
 import './SignUp.css'
 
 
@@ -12,6 +13,10 @@ function SignUp() {
   const [name , setName ] = useState('')
   const [email , setEmail ] = useState('')
   const [password , setPassword ] = useState('')
+  const navigate = useNavigate()
+  // api state 
+  const [signUpUser , { isLoading , error}] = useSignUpUserMutation()
+
 
   //image states
 
@@ -43,7 +48,6 @@ async function uploadImage(){
 
   try{
      setUploadingImage(true)
-    // const cloudinaryUrl = 'https://cloudinary://386278873461642:pqjjFRxR-NpuFIIONkbOJsYWFRw@dfd0e3qao/image/upload'
      let res = await fetch( "https://api.cloudinary.com/v1_1/dfd0e3qao/image/upload" , {
         
          method:'post',
@@ -73,6 +77,13 @@ async function uploadImage(){
     const url = await uploadImage(image)
     console.log(url)
  
+    signUpUser({ name , email , password , pitcure:url }).then(({data}) => {
+
+         if(data){
+          console.log(data)
+          navigate("/chat")
+         }
+    })
  
  }
   

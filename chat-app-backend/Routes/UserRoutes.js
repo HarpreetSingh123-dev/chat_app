@@ -3,10 +3,6 @@ const User = require("../Models/User");
 
 // creating user
 
-router.get("/", async(req,res)=>{
-
-  res.send("Hello There")
-})
 
 
 router.post("/", async (req, res) => {
@@ -31,14 +27,20 @@ router.post("/", async (req, res) => {
 
 // login user
 
-router.post("login" , async ( req , res )=>{
+router.post("/login" , async ( req , res )=>{
 
 
     try {
         const { email , password } = req.body
         const user = await User.findByCredentials(email,password)
+        console.log("back in game")
         user.status = "online"
-        await user.save()
+
+        User.findByIdAndUpdate(user._id , {status:"online"} , (e)=>{
+
+           console.log(e)
+        })
+       
         res.status(200).json(user)
         
     } catch (e) {
