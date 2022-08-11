@@ -6,6 +6,8 @@ const userRoutes = require('./Routes/UserRoutes')
 const Message = require('./Models/Messages')
 const User = require('./Models/User')
 
+
+
 app.use(express.urlencoded({extended:true}))
 app.use(express.json())
 app.use(cors()) // fuck you cors for wasting my one whole day
@@ -62,25 +64,38 @@ function sortRoomMessagesByDate(messages){
 io.on('connection' , (socket)=>{
 
 
-       socket.on('new-user' , async()=>{
-
-         const members = await User.find()
-         io.emit('new-user' , members)
+       socket.on("new-user", async () => {
+         const members = await User.find();
+         io.emit("new-user", members);
        }),
+         
+       
+       socket.on("join-room", async (room) => {
+           socket.join(room);
 
+           let roomMessages = await getLastMessagesFromRoom(room);
+           roomMessages = sortRoomMessagesByDate(roomMessages);
 
-       socket.on('join-room' , async(room)=>{
+           socket.emit("room-messages", roomMessages);
+         }),
 
-          socket.join(room)
+       socket.on("message-room" , async (room , content , sender , time , date)=> {
+ 
+          console.log("new message" , content)
+          const newMessage = await Message.create({content , from: sender , time , date , to: room})
 
           let roomMessages = await getLastMessagesFromRoom(room)
+
           roomMessages = sortRoomMessagesByDate(roomMessages)
-   
-          socket.emit('room-messages' , roomMessages)
-       })
+          // SENDING MESSAGE TO ROOM
+          io.to(room).emit('room-messages' , roomMessages)
+
+          socket.broadcast.emit('notifications' , room)
 
 
+       })  
 
+      
 })
 
 server.listen( PORT , ()=>{
