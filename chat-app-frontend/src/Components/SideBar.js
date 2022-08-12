@@ -20,6 +20,26 @@ function SideBar() {
     currentRoom,
   } = useContext(AppContext);
 
+
+  function joinRoom( room , isPublic = true){
+       
+       
+       if(!user){
+        return alert('Please Login')
+       }
+
+       socket.emit('join-room' , room)
+       setCurrentRoom(room)
+       
+       if(isPublic){
+          setPrivateMemberMsg(null)
+       }
+
+       console.log("room clicked" , room)
+       console.log("current room" , currentRoom)
+  
+  }
+
   useEffect(() => {
     if (user) {
       setCurrentRoom("general");
@@ -55,8 +75,8 @@ function SideBar() {
 
      {rooms.map((room , idx )=>
      
-        <ListGroup.Item key={idx}>
-            {room}
+        <ListGroup.Item key={idx} onClick={ () => joinRoom(room)} active={room == currentRoom} style={{cursor:'pointer' , display:'flex' , justifyContent:'space-between'}}>
+            {room} {currentRoom !== room && <span></span>}
         </ListGroup.Item>
 
      )}

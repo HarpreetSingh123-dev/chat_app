@@ -7,7 +7,7 @@ import './MessageForm.css'
 
 function MessageForm() {
 
-    const [message, setMessage] = useState('')
+    const [message, setMessage] = useState('')// this is state of this component pkease dont mix it with context API
     const user = useSelector( (state) => state.user )
     const { socket , currentRoom , setMessages , messages , privateMemberMsg } = useContext(AppContext)
 
@@ -26,6 +26,13 @@ function MessageForm() {
 
     const todayDate = getFormattedDate()
 
+    socket.off('room-messages').on('room-messages' , (roomMessages) => {
+      console.log("socket was triggered") 
+      console.log("room messages" , roomMessages)
+        setMessages(roomMessages)
+
+    })
+
     function handleSubmit(e){
 
       e.preventDefault()
@@ -42,7 +49,23 @@ function MessageForm() {
 
   return (
    <div> 
-    <div className="messages-output">{!user && <div className='alert alert-danger'>Please Login</div>}</div>
+    <div className="messages-output">{!user && <div className='alert alert-danger'>Please Login</div>}
+    
+     {user && messages.map(({_id:date , messagesByDate } , idx )=> (
+   
+        <div key={idx}>
+          <p className='alert alert-info text-center message-text-indicator'>{date}</p>
+          {messagesByDate?.map(({ content , time , from: sender} , msgIdx )=>(
+
+              <div className='message' key={msgIdx}>
+                <p>{content}</p>
+              </div>
+          ))}
+        </div>
+
+     ))}
+     
+    </div>
       <Form onSubmit={handleSubmit}>
         <Row>
           <Col md={11}>

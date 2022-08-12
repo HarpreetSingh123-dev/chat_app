@@ -40,7 +40,7 @@ async function getLastMessagesFromRoom(room){
        let roomMessages = await Message.aggregate([
 
           {$match: { to : room }},
-          {$group: {_id: 'date' , messagesByDate: {$push: '$$ROOT'}}}
+          {$group: {_id: '$date' , messagesByDate: {$push: '$$ROOT'}}}
        ])
 
        return roomMessages
@@ -71,6 +71,7 @@ io.on('connection' , (socket)=>{
          
        
        socket.on("join-room", async (room) => {
+           console.log("room from frontend" , room)
            socket.join(room);
 
            let roomMessages = await getLastMessagesFromRoom(room);
@@ -88,12 +89,40 @@ io.on('connection' , (socket)=>{
 
           roomMessages = sortRoomMessagesByDate(roomMessages)
           // SENDING MESSAGE TO ROOM
+
+          console.log("it reached here")
+         
           io.to(room).emit('room-messages' , roomMessages)
 
           socket.broadcast.emit('notifications' , room)
 
 
        })  
+
+
+       app.delete('/logout' , async( req , res ) => {
+
+        try {
+
+          const { _id , newMessages } = req.body 
+
+          console.log("new messages below")
+          console.log(newMessages)
+          User.findByIdAndUpdate( _id , {status:"offine" , newMessages: newMessages} , (e)=>{
+             console.log("error occoured in logout")
+             console.log(e)
+          })
+
+          const members = await User.find()
+          socket.broadcast.emit('new-user', members)
+          res.status(200).send()
+          
+        } catch (e) {
+          console.log(e)
+          res.status(400).send()
+        }
+
+       })
 
       
 })
