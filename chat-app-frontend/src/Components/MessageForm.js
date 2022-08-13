@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import {Form , Row , Col , Button} from 'react-bootstrap'
 import { useSelector } from 'react-redux'
 import { AppContext } from '../Context/appContext'
@@ -9,7 +9,12 @@ function MessageForm() {
 
     const [message, setMessage] = useState('')// this is state of this component pkease dont mix it with context API
     const user = useSelector( (state) => state.user )
+    const messageEndRef = useRef(null)
     const { socket , currentRoom , setMessages , messages , privateMemberMsg } = useContext(AppContext)
+
+    useEffect(()=>{
+         scrollToBotton()
+    },[messages])
 
     function getFormattedDate() {
       const date = new Date();
@@ -22,6 +27,11 @@ function MessageForm() {
       day = day.length > 1  ? day : "0" + day
 
       return month + "/" + day + "/" + year;
+    }
+
+    function scrollToBotton(){
+
+      messageEndRef.current?.scrollIntoView({behaviour:"smooth"})
     }
 
     const todayDate = getFormattedDate()
@@ -49,22 +59,40 @@ function MessageForm() {
 
   return (
    <div> 
-    <div className="messages-output">{!user && <div className='alert alert-danger'>Please Login</div>}
+
     
-     {user && messages.map(({_id:date , messagesByDate } , idx )=> (
+    <div className="messages-output">{!user && <div className='alert alert-danger'>Please Login</div>}
+    {user && !privateMemberMsg?._id && <div className='alert alert-info'> You are in the {currentRoom} room</div>}
+     {/*{user && privateMemberMsg?._id (
+        <>
+          <div className='alert alert-info conversation-info'>
+            <div>
+             Your conversation with {privateMemberMsg.name} <image src={privateMemberMsg.pitcure} className='conversation-profile-picture'></image>
+            </div>
+          </div>
+        </>
+     )}*/}
+      {user && messages.map(({_id:date , messagesByDate } , idx )=> (
    
         <div key={idx}>
-          <p className='alert alert-info text-center message-text-indicator'>{date}</p>
+          <p className='alert alert-info text-center message-date-indicator'>{date}</p>
           {messagesByDate?.map(({ content , time , from: sender} , msgIdx )=>(
 
-              <div className='message' key={msgIdx}>
-                <p>{content}</p>
+              <div className={sender?.email == user?.email? "message" : "incomming-message"} key={msgIdx}>
+                <div className='message-inner'>
+                  <div className='d-flex align-item-center mb-3'>
+                    <img src={sender.pitcure} style={{width:35, height:35 , objectFit:'cover' , borderRadius:'50%', marginRight:10}}></img>
+                    <p className='message-sender'>{sender._id == user?._id ? "You" : sender.name}</p>
+                  </div>
+                     <p className='message-content'>{content}</p>
+                     <p className='message-timestamp-left'>{time}</p>
+                </div>
               </div>
           ))}
         </div>
 
      ))}
-     
+     <div ref={messageEndRef}></div>
     </div>
       <Form onSubmit={handleSubmit}>
         <Row>

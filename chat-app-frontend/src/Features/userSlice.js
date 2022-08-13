@@ -6,8 +6,23 @@ export const userSlice = createSlice({
     name:"user",
     initialState:null,
     reducers:{
-                addNotifications: (state,{payload}) =>{}, // these both are basically actions
-                resetNotifications: (state,{payload}) =>{}
+                addNotifications: (state,{payload}) =>{
+                   if(state.newMessages[payload]){
+                       state.newMessages[payload] = state.newMessages[payload] + 1
+                      }
+
+                   else {
+                         state.newMessages[payload] = 1
+                        }
+
+                }, 
+                
+                // these both are basically actions which are controllomg notifications
+                
+                resetNotifications: (state,{payload}) =>{
+
+                    delete state.newMessages[payload]
+                }
 
     },
 
