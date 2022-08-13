@@ -70,11 +70,13 @@ io.on('connection' , (socket)=>{
        }),
          
        
-       socket.on("join-room", async (room) => {
-           console.log("room from frontend" , room)
-           socket.join(room);
+       socket.on("join-room", async (newRoom , previousRoom) => {
+           console.log("room from frontend" , newRoom)
+           console.log("previous room" , previousRoom)
+           socket.join(newRoom);
+           socket.leave(previousRoom)
 
-           let roomMessages = await getLastMessagesFromRoom(room);
+           let roomMessages = await getLastMessagesFromRoom(newRoom);
            roomMessages = sortRoomMessagesByDate(roomMessages);
 
            socket.emit("room-messages", roomMessages);
@@ -108,7 +110,7 @@ io.on('connection' , (socket)=>{
 
           console.log("new messages below")
           console.log(newMessages)
-          User.findByIdAndUpdate( _id , {status:"offine" , newMessages: newMessages} , (e)=>{
+          User.findByIdAndUpdate( _id , {status:"offline" , newMessages: newMessages} , (e)=>{
              console.log("error occoured in logout")
              console.log(e)
           })

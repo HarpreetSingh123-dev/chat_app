@@ -2,7 +2,7 @@ import React , {useContext, useState} from "react";
 import {useLoginUserMutation} from '../Sevices/appApi'
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
-import {Container , Row , Col } from 'react-bootstrap'
+import {Container , Row , Col , Spinner } from 'react-bootstrap'
 import {Link,useNavigate} from 'react-router-dom'
 import { AppContext } from "../Context/appContext";
 import './Login.css'
@@ -21,6 +21,7 @@ function Login() {
 
      loginUser({email,password}).then(({data})=>{
 
+      console.log("data here" ,data)
         if(data){
            
            socket.emit('new-user')
@@ -45,6 +46,7 @@ function Login() {
          <h1 className="text-center">Login</h1>
 
             <Form.Group className="mb-3" controlId="formBasicEmail">
+              {error && <p className="alert alert-danger">{error.data}</p>}
               <Form.Label>Email address</Form.Label>
               <Form.Control type="email" placeholder="Enter email" onChange={ (e) => setEmail(e.target.value) } value={email} required />
               <Form.Text className="text-muted">
@@ -57,7 +59,7 @@ function Login() {
               <Form.Control type="password" placeholder="Password" onChange={ (e) => setPassword(e.target.value) } value={password} required />
             </Form.Group>
             <Button variant="primary" type="submit">
-              Login
+              {isLoading? <Spinner animation="grow"></Spinner> : "Login"}
             </Button>
 
             <div className="py-4">

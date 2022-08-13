@@ -42,7 +42,6 @@ function Navigation() {
               <Nav.Link>Chat</Nav.Link>
             </LinkContainer>
 
-            <Nav.Link href="#link">Link</Nav.Link>
             {user && (
               <NavDropdown
                 title={

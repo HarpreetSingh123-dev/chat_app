@@ -106,6 +106,8 @@ async function uploadImage(){
 
           </div>
 
+          {error && <p className='alert alert-danger'>{error.data}</p>}
+
           <Form.Group className="mb-3" controlId="formBasicName">
             <Form.Label>Name</Form.Label>
             <Form.Control type="text" placeholder="Your Name" onChange={ (e) => setName(e.target.value) } value={name} />
@@ -125,7 +127,7 @@ async function uploadImage(){
             <Form.Control type="password" placeholder="Password" onChange={ (e) => setPassword(e.target.value) } value={password} />
           </Form.Group>
           <Button variant="primary" type="submit">
-            { uploadingImage ? 'Signing you up ' : 'Sign Up'}
+            { uploadingImage || isLoading? 'Signing you up ' : 'Sign Up'}
           </Button>
 
           <div className="py-4">

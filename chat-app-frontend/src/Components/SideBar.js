@@ -31,7 +31,8 @@ function SideBar() {
         return alert('Please Login')
        }
 
-       socket.emit('join-room' , room)
+       socket.emit('join-room' , room  , currentRoom)
+       console.log("current room is" , currentRoom)
        setCurrentRoom(room)
        
        if(isPublic){
@@ -113,7 +114,9 @@ function SideBar() {
     <h2>Members</h2>
 
     <ListGroup>
+      {/*console.log("Members are these" , members)*/}
     {members.map((member)=>( 
+      
       <ListGroup.Item key={member.id} style={{cursor:"pointer"}} active={privateMemberMsg?._id == member?._id} onClick={()=> handlePrivateMemberMsg(member)} disabled={member._id === user._id}>
         <Row>
 
@@ -126,7 +129,7 @@ function SideBar() {
             <Col xs={9}>
              {member.name}
              {member._id == user?._id && "  (you)"}
-             {member.status == "offline" && "  (Offline)" }
+             {member.status === "offline" && "  (Offline)"}
             
             </Col>
 

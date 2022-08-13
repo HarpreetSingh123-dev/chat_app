@@ -63,7 +63,7 @@ function MessageForm() {
     
     <div className="messages-output">{!user && <div className='alert alert-danger'>Please Login</div>}
     {user && !privateMemberMsg?._id && <div className='alert alert-info'> You are in the {currentRoom} room</div>}
-     {/*{user && privateMemberMsg?._id (
+     {user && privateMemberMsg?._id && (
         <>
           <div className='alert alert-info conversation-info'>
             <div>
@@ -71,7 +71,7 @@ function MessageForm() {
             </div>
           </div>
         </>
-     )}*/}
+     )}
       {user && messages.map(({_id:date , messagesByDate } , idx )=> (
    
         <div key={idx}>
